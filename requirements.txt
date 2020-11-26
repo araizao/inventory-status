@@ -1,0 +1,5 @@
+wxpython
+requests
+selenium
+chromedriver-py==87.0.4280.66
+lxml
