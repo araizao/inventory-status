@@ -116,7 +116,7 @@ class Amazon:
                         headers={'Content-Type': 'application/json'})
                 stockdict.update({url: 'True'})
             else:
-                print("[" + current_time + "] " + "Sold Out: (Amazon.com) " + title)
+                # print("[" + current_time + "] " + "Sold Out: (Amazon.com) " + title)
                 stockdict.update({url: 'False'})
         driver.quit()
 
@@ -180,7 +180,7 @@ class Gamestop:
                     headers={'Content-Type': 'application/json'})
             stockdict.update({url: 'True'})
         else:
-            print("[" + current_time + "] " + "Sold Out: (Gamestop.com) " + title)
+            # print("[" + current_time + "] " + "Sold Out: (Gamestop.com) " + title)
             stockdict.update({url: 'False'})
         driver.quit()
 
@@ -201,7 +201,7 @@ class Target:
         now = datetime.now()
         current_time = now.strftime("%H:%M:%S")
         if "Deliver to" not in page.text:
-            print("[" + current_time + "] " + "Sold Out: (Target.com) " + title)
+            # print("[" + current_time + "] " + "Sold Out: (Target.com) " + title)
             stockdict.update({url: 'False'})
         else: 
             print("[" + current_time + "] " + "In Stock: (Target.com) " + title + " - " + url)
@@ -260,10 +260,10 @@ class BestBuy:
         stock_status = al[al.find(search_string) + 33: al.find('","displayText"')]
         product_name = sku_dict.get(sku)
         if stock_status == "SOLD_OUT":
-            print("[" + current_time + "] " + "Sold Out: (BestBuy.com) " + product_name)
+            # print("[" + current_time + "] " + "Sold Out: (BestBuy.com) " + product_name)
             stockdict.update({sku: 'False'})
         elif stock_status == "CHECK_STORES":
-            print(product_name + " sold out @ BestBuy (check stores status)")
+            # print(product_name + " sold out @ BestBuy (check stores status)")
             stockdict.update({sku: 'False'})
         else: 
             if stock_status == "ADD_TO_CART":
