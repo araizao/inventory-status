@@ -10,6 +10,7 @@ from threading import Thread
 from selenium import webdriver
 from chromedriver_py import binary_path as driver_path
 from lxml import html
+import os
 
 stockdict = {}
 sku_dict = {}
@@ -67,8 +68,15 @@ class Amazon:
         options.add_argument('log-level=3')
         options.add_argument('--ignore-certificate-errors')
         options.add_argument('--user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 11_0_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.66 Safari/537.36"')
-        options.add_argument("headless")
-        driver = webdriver.Chrome(executable_path=driver_path, options=options)
+        options.add_argument("--headless")
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--sandbox")
+
+        # Heroku setup
+        options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
+        driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), options=options)
+
+        # driver = webdriver.Chrome(executable_path=driver_path, options=options)
         driver.get(url)
 
         html = driver.page_source
@@ -134,8 +142,15 @@ class Gamestop:
         options.add_argument('log-level=3')
         options.add_argument('--ignore-certificate-errors')
         options.add_argument('--user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 11_0_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.66 Safari/537.36"')
-        options.add_argument("headless")
-        driver = webdriver.Chrome(executable_path=driver_path, options=options)
+        options.add_argument("--headless")
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--sandbox")
+
+        # Heroku setup
+        options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
+        driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), options=options)
+
+        # driver = webdriver.Chrome(executable_path=driver_path, options=options)
         driver.get(url)
         # status_raw = driver.find_element_by_xpath("//div[@class='add-to-cart-buttons']")
         # status_text = status_raw.text
@@ -319,8 +334,15 @@ class Walmart:
         options.add_argument('--ignore-certificate-errors')
         options.add_argument(
             '--user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 11_0_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.66 Safari/537.36"')
-        options.add_argument("headless")
-        driver = webdriver.Chrome(executable_path=driver_path, options=options)
+        options.add_argument("--headless")
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--sandbox")
+
+        # Heroku setup
+        options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
+        driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), options=options)
+
+        # driver = webdriver.Chrome(executable_path=driver_path, options=options)
         driver.get(url)
 
         title = driver.find_element_by_xpath("//h1[@class='prod-ProductTitle prod-productTitle-buyBox font-bold']").text
