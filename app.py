@@ -4,8 +4,8 @@ import json
 from datetime import datetime
 import urllib.parse as urlparse
 from urllib.parse import parse_qs
-import webhook_settings
-import product_settings
+# import webhook_settings
+# import product_settings
 from threading import Thread
 from selenium import webdriver
 from chromedriver_py import binary_path as driver_path
