@@ -43,7 +43,7 @@ def menu():
 
 
 def return_data(path):
-    with open(path,"r") as file:
+    with open(path, "r") as file:
         data = json.load(file)
     file.close()
     return data
@@ -82,52 +82,55 @@ class Amazon:
         html = driver.page_source
         if "To discuss automated access to Amazon data please contact api-services-support@amazon.com." in html:
             print("Amazons Bot Protection is preventing this call.")
-        else: 
-            status_raw = driver.find_element_by_xpath("//div[@id='olpOfferList']")
-            status_text = status_raw.text
-            title_raw = driver.find_element_by_xpath("//h1[@class='a-size-large a-spacing-none']")
-            title_text = title_raw.text
-            title = title_text
-            now = datetime.now()
-            current_time = now.strftime("%H:%M:%S")
-            if "Currently, there are no sellers that can deliver this item to your location." not in status_text:
-                print("[" + current_time + "] " + "In Stock: (Amazon.com) " + title + " - " + url)
-                # slack_data = {'content': "[" + current_time + "] " +  title + " in stock at Amazon - " + url}
-                img_raw = driver.find_element_by_xpath('//*[@id="olpProductImage"]/a/img')
-                img =img_raw.get_attribute('src')
-                slack_data = {
-                    'username': "Amazon Bot",
-                    'avatar_url': "https://github.com/tnware/product-checker/blob/master/img/amazon.png",
-                    'content': "GameStop Stock Alert:",
-                    'embeds': [{
-                        'title': title,
-                        'description': title + " in stock at Amazon",
-                        'url': url,
-                        "fields": [
-                            {
-                                "name": "Time:",
-                                "value": current_time
-                            },
-                            {
-                                "name": "Status:",
-                                "value": "In Stock"
+        else:
+            try:
+                status_raw = driver.find_element_by_xpath("//div[@id='olpOfferList']")
+                status_text = status_raw.text
+                title_raw = driver.find_element_by_xpath("//h1[@class='a-size-large a-spacing-none']")
+                title_text = title_raw.text
+                title = title_text
+                now = datetime.now()
+                current_time = now.strftime("%H:%M:%S")
+                if "Currently, there are no sellers that can deliver this item to your location." not in status_text:
+                    print("[" + current_time + "] " + "In Stock: (Amazon.com) " + title + " - " + url)
+                    # slack_data = {'content': "[" + current_time + "] " +  title + " in stock at Amazon - " + url}
+                    img_raw = driver.find_element_by_xpath('//*[@id="olpProductImage"]/a/img')
+                    img =img_raw.get_attribute('src')
+                    slack_data = {
+                        'username': "Amazon Bot",
+                        'avatar_url': "https://github.com/tnware/product-checker/blob/master/img/amazon.png",
+                        'content': "GameStop Stock Alert:",
+                        'embeds': [{
+                            'title': title,
+                            'description': title + " in stock at Amazon",
+                            'url': url,
+                            "fields": [
+                                {
+                                    "name": "Time:",
+                                    "value": current_time
+                                },
+                                {
+                                    "name": "Status:",
+                                    "value": "In Stock"
+                                }
+                            ],
+                            'thumbnail': {
+                                'url': img
                             }
-                        ],
-                        'thumbnail': {
-                            'url': img
-                        }
-                    }]
-                }
-                if stockdict.get(url) == 'False':
-                    response = requests.post(
-                        webhook_url, data=json.dumps(slack_data),
-                        headers={'Content-Type': 'application/json'})
-                stockdict.update({url: 'True'})
-            else:
-                # print("[" + current_time + "] " + "Sold Out: (Amazon.com) " + title)
-                stockdict.update({url: 'False'})
-        driver.quit()
-
+                        }]
+                    }
+                    if stockdict.get(url) == 'False':
+                        response = requests.post(
+                            webhook_url, data=json.dumps(slack_data),
+                            headers={'Content-Type': 'application/json'})
+                    stockdict.update({url: 'True'})
+                else:
+                    print("[" + current_time + "] " + "Sold Out: (Amazon.com) " + title)
+                    stockdict.update({url: 'False'})
+            except Exception as e:
+                print("Error while parsing", e)
+            finally:
+                driver.quit()
 
 class Gamestop:
 
@@ -154,51 +157,54 @@ class Gamestop:
         driver.get(url)
         # status_raw = driver.find_element_by_xpath("//div[@class='add-to-cart-buttons']")
         # status_text = status_raw.text
-        status_raw = driver.find_elements_by_class_name('add-to-cart-buttons')
-        status_text = status_raw[0].text
-        title_raw = driver.find_element_by_xpath("//h1[@class='product-name h2']")
-        title_text = title_raw.text
-        title = title_text
-        # image_raw = driver.find_element_by_xpath("//img[@class='mainImg']")
-        # image_raw = driver.find_element_by_class_name('product-main-image-gallery')
-        # img = image_raw.get_attribute('src')
-        now = datetime.now()
-        current_time = now.strftime("%H:%M:%S")
-        if "ADD TO CART" in status_text:
-            print("[" + current_time + "] " + "In Stock: (Gamestop.com) " + title + " - " + url)
-            slack_data = {
-                'username': "GameStop Bot",
-                'avatar_url': "https://github.com/tnware/product-checker/blob/master/img/gamestop.png",
-                'content': "GameStop Stock Alert:", 
-                'embeds': [{ 
-                    'title': title,  
-                    'description': title + " in stock at GameStop", 
-                    'url': url, 
-                    "fields": [
-                    {
-                        "name": "Time:",
-                        "value": current_time
-                    },
-                    {
-                        "name": "Status:",
-                        "value": "In Stock"
+        try:
+            status_raw = driver.find_elements_by_class_name('add-to-cart-buttons')
+            status_text = status_raw[0].text
+            title_raw = driver.find_element_by_xpath("//h1[@class='product-name h2']")
+            title_text = title_raw.text
+            title = title_text
+            # image_raw = driver.find_element_by_xpath("//img[@class='mainImg']")
+            # image_raw = driver.find_element_by_class_name('product-main-image-gallery')
+            # img = image_raw.get_attribute('src')
+            now = datetime.now()
+            current_time = now.strftime("%H:%M:%S")
+            if "ADD TO CART" in status_text:
+                print("[" + current_time + "] " + "In Stock: (Gamestop.com) " + title + " - " + url)
+                slack_data = {
+                    'username': "GameStop Bot",
+                    'avatar_url': "https://github.com/tnware/product-checker/blob/master/img/gamestop.png",
+                    'content': "GameStop Stock Alert:",
+                    'embeds': [{
+                        'title': title,
+                        'description': title + " in stock at GameStop",
+                        'url': url,
+                        "fields": [
+                        {
+                            "name": "Time:",
+                            "value": current_time
+                        },
+                        {
+                            "name": "Status:",
+                            "value": "In Stock"
+                        }
+                                ],
+                        # 'thumbnail': {
+                        #     'url': img
+                        #     }
+                        }]
                     }
-                            ],
-                    # 'thumbnail': {
-                    #     'url': img
-                    #     }
-                    }]
-                }
-            if stockdict.get(url) == 'False':
-                response = requests.post(
-                    webhook_url, data=json.dumps(slack_data),
-                    headers={'Content-Type': 'application/json'})
-            stockdict.update({url: 'True'})
-        else:
-            # print("[" + current_time + "] " + "Sold Out: (Gamestop.com) " + title)
-            stockdict.update({url: 'False'})
-        driver.quit()
-
+                if stockdict.get(url) == 'False':
+                    response = requests.post(
+                        webhook_url, data=json.dumps(slack_data),
+                        headers={'Content-Type': 'application/json'})
+                stockdict.update({url: 'True'})
+            else:
+                print("[" + current_time + "] " + "Sold Out: (Gamestop.com) " + title)
+                stockdict.update({url: 'False'})
+        except Exception as e:
+            print("Error while parsing", e)
+        finally:
+            driver.quit()
 
 class Target:
 
